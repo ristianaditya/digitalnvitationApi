@@ -18,12 +18,12 @@ class UserController extends Controller
     public function register(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'name'      => 'required|string|between:2,100',
+            'name'      => 'string|between:2,100',
             'email'     => 'required|email|unique:users',
             'username'     => 'required|unique:users',
-            'no_phone' => 'required|unique:users',
-            'gender' => 'required|in:male,female',
-            'role' => 'required|in:admin,user',
+            'no_phone' => 'unique:users',
+            'gender' => 'in:male,female',
+            'role' => 'in:admin,user',
             'password'  => 'required|min:8|confirmed',
         ]);
 
@@ -79,11 +79,18 @@ class UserController extends Controller
             'subscribe' => $user->subscribe,
         ];
 
+        $payload = JWTAuth::setToken($token)->getPayload();
+        $expirationTime = $payload->get('exp');
+
         return response()->json([
             'success' => true,
             'data'    => $user,
-            'access_token'   => $token
-        ], 200);
+            'expires_in' => $expirationTime,
+            'access_token'   => $token,
+        ], 200)
+        ->header('Access-Control-Allow-Origin', 'http://localhost:3000')
+        ->header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS')
+        ->header('Access-Control-Allow-Headers', 'Content-Type, Accept, Authorization, X-Requested-With, Application');
     }
 
     public function logout()
@@ -104,6 +111,23 @@ class UserController extends Controller
         }
     }
 
+    public function getSession()
+    {
+        try {
+            $user = JWTAuth::parseToken()->authenticate();
+
+            return response()->json([
+                'success' => true,
+                'data' => $user
+            ], 200);
+        } catch (\Throwable $th) {
+            return response()->json([
+                'success' => false,
+                'message' => $th->getMessage(),
+            ], 401);
+        }
+    }
+
     public function user(Request $request){
         try {
             return $request->user();
@@ -119,11 +143,14 @@ class UserController extends Controller
         try {
             $newToken = JWTAuth::refresh(JWTAuth::getToken());
             if($newToken) {
+                $payload = JWTAuth::setToken($newToken)->getPayload();
+                $expirationTime = $payload->get('exp');
                 return response()->json([
                     'success' => true,
                     'message' => 'Token successfully refresh',
                     'access_token' => $newToken,
-                ]);
+                    'expires_in' => $expirationTime,
+                ], 200);
             }
         } catch (\Throwable $th) {
             return response()->json([
@@ -151,12 +178,12 @@ class UserController extends Controller
     public function update(Request $request, User $user)
     {
         $validator = Validator::make($request->all(), [
-            'name'      => 'required|string|between:2,100',
-            'email'     => 'required|email',
-            'username'     => 'required',
-            'no_phone' => 'required',
-            'gender' => 'required|in:male,female',
-            'role' => 'required|in:admin,user',
+            'name'      => 'string|between:2,100',
+            'email'     => 'email|unique:users,email,'.$user->id,
+            'username'     => 'string|between:2,100|unique:users,username,'.$user->id,
+            'no_phone' => 'between:6,15|unique:users,no_phone,'.$user->id,
+            'gender' => 'in:male,female',
+            'address'      => 'string|between:2,200',
         ]);
 
         if ($validator->fails()) {
@@ -168,5 +195,68 @@ class UserController extends Controller
             'success' => true,
             'data' => $user
         ]);
+    }
+
+    public function uploadPhoto(Request $request, User $user)
+    {
+        try {
+            if ($request->hasFile('file')) {
+                $file = $request->file('file');
+                $originalFileName = $file->getClientOriginalName();
+
+                // Mendapatkan tanggal dan waktu saat ini
+                $currentDateTime = now()->format('YmdHis');
+
+                // Membuat nama baru untuk file
+                $newFileName = $currentDateTime . '_' . $originalFileName;
+
+                // Simpan file ke direktori tertentu
+                $file->move(public_path('avatars'), $newFileName);
+
+                $fileUrl = asset('avatars/' . $newFileName);
+
+                $user->update(['picture' => $fileUrl]);
+
+                return response()->json(['message' => 'File uploaded successfully']);
+            }
+            return response()->json(['message' => 'No file uploaded'], 400);
+        } catch (\Throwable $th) {
+            return response()->json([
+                'success' => false,
+                'message' => $th->getMessage(),
+            ], 409);
+        }
+    }
+
+    public function updatePassword(Request $request, User $user)
+    {
+        try {
+            $validator = Validator::make($request->all(), [
+                'password'  => 'required|min:8',
+            ]);
+
+            if ($validator->fails()) {
+                return response()->json($validator->errors(), 422);
+            }
+            $user = JWTAuth::parseToken()->authenticate();
+            if(Hash::check($request->old_password, $user->password, [])) {
+                $user->update(['password' => bcrypt($request->password)]);
+            }else{
+                return response()->json([
+                    'success' => false,
+                    'message' => 'password failed to update',
+                ], 422);
+            }
+            return response()->json([
+                'success' => true,
+                'data' => 'password successfully updated'
+            ]);
+        } catch (\Throwable $th) {
+            return response()->json([
+                'success' => false,
+                'message' => $th->getMessage(),
+            ], 401);
+        }
+
     }
 }

@@ -16,14 +16,15 @@ return new class extends Migration
             $table->string('username', 100)->nullable(false)->unique('users_username_unique');
             $table->string('email', 100)->nullable(false)->unique('users_email_unique');
             $table->string('password', 100)->nullable(false);
-            $table->string('name', 100)->nullable(false);
-            $table->string('no_phone', 20)->nullable(false)->unique('users_phone_unique');
-            $table->enum('gender', ['male', 'female'])->nullable(false)->default('male');
-            $table->enum('role', ['admin', 'user'])->nullable(false)->default('user');
+            $table->string('name', 100)->nullable();
+            $table->string('no_phone', 20)->nullable()->unique('users_phone_unique');
+            $table->enum('gender', ['male', 'female'])->nullable();
+            $table->enum('role', ['admin', 'user'])->nullable()->default('user');
+            $table->string('address')->nullable();
+            $table->string('picture')->nullable();
             $table->enum('subscribe', ['starter', 'silver', 'gold'])->nullable()->default('starter');
             $table->timestamp('subscribe_start', $precision = 0)->nullable();
             $table->timestamp('subscribe_expired', $precision = 0)->nullable();
-            $table->string('token', 100)->nullable()->unique('users_token_unique');
             $table->timestamps();
         });
     }

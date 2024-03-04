@@ -23,11 +23,14 @@ Route::post('/register', [UserController::class, 'register']);
 Route::post('/login', [UserController::class, 'login']);
 Route::post('/logout', [UserController::class, 'logout']);
 Route::post('/refreshToken', [UserController::class, 'refreshToken']);
+Route::post('/getSession', [UserController::class, 'getSession']);
 
 Route::middleware('auth:api')->group(function () {
-    Route::get('/user', [UserController::class, 'user']);
     Route::get('/getUser', [UserController::class, 'getUser']);
+    Route::get('/user', [UserController::class, 'user']);
     Route::get('/showUser/{user}', [UserController::class, 'showUser']);
+    Route::post('/uploadPhoto/{user}', [UserController::class, 'uploadPhoto']);
     Route::post('/updateUser/{user}', [UserController::class, 'update']);
+    Route::post('/updatePassword/{user}', [UserController::class, 'updatePassword']);
 
 });
