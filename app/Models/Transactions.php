@@ -10,9 +10,19 @@ class Transactions extends Model
 {
     protected $primaryKey= "id";
     protected $keyType = "int";
-    protected $table = "contacts";
+    protected $table = "transactions";
     public $incrementing = true;
     public $timestamps = true;
+
+    protected $fillable =[
+        'user_id',
+        'amount',
+        'status',
+        'subscribe',
+        'id_payment',
+        'subscribe_start',
+        'subscribe_expired'
+    ];
 
     public function user(): BelongsTo{
         return $this->belongsTo(Transactions::class, "user_id", "id");

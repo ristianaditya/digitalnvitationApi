@@ -22,9 +22,6 @@ return new class extends Migration
             $table->enum('role', ['admin', 'user'])->nullable()->default('user');
             $table->string('address')->nullable();
             $table->string('picture')->nullable();
-            $table->enum('subscribe', ['starter', 'silver', 'gold'])->nullable()->default('starter');
-            $table->timestamp('subscribe_start', $precision = 0)->nullable();
-            $table->timestamp('subscribe_expired', $precision = 0)->nullable();
             $table->timestamps();
         });
     }

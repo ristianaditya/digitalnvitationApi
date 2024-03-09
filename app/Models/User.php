@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use PHPOpenSourceSaver\JWTAuth\Contracts\JWTSubject;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Support\Carbon;
 
 class User extends Authenticatable implements JWTSubject
 {
@@ -23,7 +24,6 @@ class User extends Authenticatable implements JWTSubject
         'token',
         'gender',
         'role',
-        'subscribe',
         'address',
         'picture'
     ];
@@ -38,5 +38,13 @@ class User extends Authenticatable implements JWTSubject
     public function getJWTCustomClaims()
     {
         return [];
+    }
+
+    public function latestTransaction()
+    {
+        return $this->hasOne(Transactions::class, 'user_id')
+            ->whereDate('subscribe_start', '<=', Carbon::now())
+            ->whereDate('subscribe_expired', '>=', Carbon::now())
+            ->latest('subscribe_start');
     }
 }

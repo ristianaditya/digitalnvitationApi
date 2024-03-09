@@ -76,7 +76,6 @@ class UserController extends Controller
             'role' => $user->role,
             'no_phone' => $user->no_phone,
             'gender' => $user->gender,
-            'subscribe' => $user->subscribe,
         ];
 
         $payload = JWTAuth::setToken($token)->getPayload();
@@ -116,9 +115,11 @@ class UserController extends Controller
         try {
             $user = JWTAuth::parseToken()->authenticate();
 
+            $userWithTransaction = User::with(['latestTransaction'])->find($user->id);
+
             return response()->json([
                 'success' => true,
-                'data' => $user
+                'data' => $userWithTransaction
             ], 200);
         } catch (\Throwable $th) {
             return response()->json([
