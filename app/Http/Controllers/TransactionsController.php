@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Services\Midtrans\CreateSnapTokenService;
+use PHPOpenSourceSaver\JWTAuth\Facades\JWTAuth;
 
 class TransactionsController extends Controller
 {
@@ -63,22 +64,16 @@ class TransactionsController extends Controller
        } catch (\Throwable $th) {
            return response()->json([
                'success' => false,
-               'message' =>$request->detailsTransaction,
-           ], 401);
+               'message' =>$th->getMessage(),
+           ]);
        }
     }
-    public function tester(Request $request)
+    public function historyByUser(Request $request)
     {
-       try {
-           return response()->json([
-               'success' => true,
-               'hasilnya' => $request->dataLoad
-           ], 200);
-       } catch (\Throwable $th) {
-           return response()->json([
-               'success' => false,
-               'message' => $th,
-           ], 401);
-       }
+        $user = JWTAuth::parseToken()->authenticate();
+
+        $transaction = Transactions::where('user_id', $user->id)->orderBy('subscribe_start', 'asc')->get();
+
+        return response()->json(['transaction' => $transaction], 200);
     }
 }

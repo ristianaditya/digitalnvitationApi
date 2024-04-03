@@ -15,7 +15,7 @@ class User extends Authenticatable implements JWTSubject
     protected $KeyType = "int";
     public $timeStamps = true;
     public $incrementing = true;
-    protected $fillable =[
+    protected $fillable = [
         'username',
         'password',
         'name',
@@ -30,6 +30,14 @@ class User extends Authenticatable implements JWTSubject
     public function transactions(): HasMany
     {
         return $this->hasMany(Transactions::class, "user_id", "id");
+    }
+    public function projects(): HasMany
+    {
+        return $this->hasMany(Projects::class, "user_id", "id");
+    }
+    public function imageUploaders(): HasMany
+    {
+        return $this->hasMany(imageUploaders::class, "user_id", "id");
     }
     public function getJWTIdentifier()
     {
