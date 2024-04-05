@@ -1,13 +1,15 @@
 <?php
 
-use App\Http\Controllers\UserController;
-use App\Http\Controllers\TransactionsController;
-use App\Http\Controllers\ProjectsController;
-use App\Http\Controllers\ImageUploadersController;
-use App\Http\Controllers\MusicsController;
+use Midtrans\Transaction;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-use Midtrans\Transaction;
+use App\Http\Controllers\UserController;
+use App\Http\Controllers\MusicsController;
+use App\Http\Controllers\ProjectsController;
+use App\Http\Controllers\GuestListController;
+use App\Http\Controllers\InvitationsController;
+use App\Http\Controllers\TransactionsController;
+use App\Http\Controllers\ImageUploadersController;
 
 /*
 |--------------------------------------------------------------------------
@@ -64,6 +66,22 @@ Route::middleware('auth:api')->group(function () {
             Route::get('/getMusics', 'getAll');
             Route::post('getById/{id}', 'getById');
             Route::post('/createMusics', 'create');
+            Route::post('/update/{id}', 'update');
+            Route::post('/delete/{id}', 'destroy');
+        });
+    });
+    Route::controller(InvitationsController::class)->group(function () {
+        Route::prefix('invitations')->group(function () {
+            Route::get('/getAll', 'getAll');
+            Route::post('/create', 'create');
+            Route::post('/getByProject/{id}', 'getByProject');
+        });
+    });
+    Route::controller(GuestListController::class)->group(function () {
+        Route::prefix('guest')->group(function () {
+            Route::post('/create', 'create');
+            Route::get('/getById/{id}', 'getById');
+            Route::get('/getByIdGuest/{id}', 'getByIdGuest');
             Route::post('/update/{id}', 'update');
             Route::post('/delete/{id}', 'destroy');
         });

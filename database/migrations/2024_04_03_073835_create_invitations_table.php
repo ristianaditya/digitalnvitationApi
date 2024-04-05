@@ -13,7 +13,18 @@ return new class extends Migration
     {
         Schema::create('invitations', function (Blueprint $table) {
             $table->id();
+            $table->unsignedBigInteger('user_id')->nullable(false);
+            $table->string('project_id', 100)->nullable();
+            $table->unsignedBigInteger('music_id')->nullable(false);
+            $table->string('invite_link', 100)->nullable(false)->unique('invitations_invite_link_unique');
+            $table->timestamp('invite_date', $precision = 0)->nullable();
+            $table->enum('status', ['draft', 'publish', 'unpublish'])->nullable()->default('draft');
             $table->timestamps();
+            $table->softDeletes();
+
+            $table->foreign('user_id')->on('users')->references('id');
+            $table->foreign('project_id')->on('projects')->references('id');
+            $table->foreign('music_id')->on('musics')->references('id');
         });
     }
 
