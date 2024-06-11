@@ -63,13 +63,23 @@ class ProjectsController extends Controller
             ], 409);
         }
     }
-    public function getByUserId(Request $request)
+    public function getByUserId()
     {
         $user = JWTAuth::parseToken()->authenticate();
-
-        // Retrieve projects for the authenticated user
-        $projects = Projects::where('user_id', $user->id)->get();
+        $projects = Projects::with(['invitation'])->where('user_id', $user->id)->get();
 
         return response()->json(['projects' => $projects], 200);
+    }
+    public function destroy($id)
+    {
+        $projects = Projects::find($id);
+        if (!$projects) {
+            return response()->json(['message' => 'Projects not found'], 404);
+        }
+        $projects->delete();
+
+        return response()->json([
+            'message' => 'Projects deleted successfully'
+        ]);
     }
 }

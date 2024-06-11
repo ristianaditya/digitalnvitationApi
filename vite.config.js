@@ -1,7 +1,6 @@
 import { defineConfig } from 'vite';
 import laravel from 'laravel-vite-plugin';
 import  wppconnect  from '@wppconnect-team/wppconnect';
-import readline from 'readline';
 import {
     GoogleGenerativeAI,
     HarmCategory,
@@ -253,7 +252,10 @@ wppconnect
 
                     run();
                 }
+                const parameter1 = process.argv[2];
 
+                // Gunakan parameter sesuai kebutuhan
+                console.log('Parameter 1:', parameter1);
             } catch (error) {
                 console.log(error.message);
             }

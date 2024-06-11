@@ -2,9 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\rsvp;
 use App\Models\guestList;
-use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Validator;
 use PHPOpenSourceSaver\JWTAuth\Facades\JWTAuth;
 
@@ -30,6 +31,32 @@ class GuestListController extends Controller
             ], 500);
         }
     }
+
+    public function attendance(Request $request)
+    {
+        try {
+            $guests = GuestList::with('invitation')
+                ->where('name', $request->name)
+                ->withWhereHas('invitation', function ($query) use ($request) {
+                    $query->where('invite_link', $request->invite_link);
+                })
+                ->update(['attendance' => 'attended']);
+
+            if($guests) {
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Guest successfully updated',
+                ], 200);
+            }
+            return response()->json(['success' => false, 'message' => 'Guest not found'], 400);
+        } catch (\Throwable $th) {
+            return response()->json([
+                'success' => false,
+                'message' => $th->getMessage(),
+            ], 500);
+        }
+    }
+
 
     public function getByIdGuest($id)
     {
@@ -115,5 +142,43 @@ class GuestListController extends Controller
         return response()->json([
             'message' => 'Guest deleted successfully'
         ]);
+    }
+
+    public function guestStats($id)
+    {
+        try {
+            $totalGreetings = rsvp::with('guest.invitation')
+            ->whereHas('guest.invitation', function ($query) use ($id) {
+                $query->where('project_id', $id);
+            })
+            ->count();
+            $totalGuests = GuestList::with('invitation')
+            ->whereHas('invitation', function ($query) use ($id) {
+                $query->where('project_id', $id);
+            })
+            ->count();
+            $totalAttended = GuestList::with('invitation')
+                ->whereHas('invitation', function ($query) use ($id) {
+                $query->where('project_id', $id);
+            })
+            ->where('attendance', 'attended')->count();
+            $totalNotAttended = GuestList::with('invitation')
+                ->whereHas('invitation', function ($query) use ($id) {
+                $query->where('project_id', $id);
+            })
+            ->where('attendance', '!=', 'attended')->count();
+
+            return response()->json(['data' => [
+                'total_guests' => $totalGuests,
+                'total_attended' => $totalAttended,
+                'total_not_attended' => $totalNotAttended,
+                'total_greetings' => $totalGreetings,
+            ]], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage(),
+            ], 500);
+        }
     }
 }

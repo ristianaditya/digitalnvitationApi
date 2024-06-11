@@ -3,9 +3,11 @@
 use Midtrans\Transaction;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\RsvpController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\MusicsController;
 use App\Http\Controllers\ProjectsController;
+use App\Http\Controllers\WhatsAppController;
 use App\Http\Controllers\GuestListController;
 use App\Http\Controllers\InvitationsController;
 use App\Http\Controllers\TransactionsController;
@@ -21,11 +23,12 @@ use App\Http\Controllers\ImageUploadersController;
 | be assigned to the "api" middleware group. Make something great!
 |
 */
-
-Route::controller(UserController::class)->group(function () {
-    Route::post('/register', 'register');
-    Route::post('/login', 'login');
-    Route::post('/logout', 'logout');
+Route::middleware('api')->group(function () {
+    Route::controller(UserController::class)->group(function () {
+        Route::post('/register', 'register');
+        Route::post('/login', 'login');
+        Route::post('/logout', 'logout');
+    });
 });
 
 Route::middleware('auth:api')->group(function () {
@@ -75,15 +78,31 @@ Route::middleware('auth:api')->group(function () {
             Route::get('/getAll', 'getAll');
             Route::post('/create', 'create');
             Route::post('/getByProject/{id}', 'getByProject');
+            Route::post('/getInvitation/{id}', 'getInvitation');
+            Route::post('/editClipbord', 'editClipbord');
+            Route::post('/delete/{id}', 'destroy');
         });
     });
     Route::controller(GuestListController::class)->group(function () {
         Route::prefix('guest')->group(function () {
             Route::post('/create', 'create');
             Route::get('/getById/{id}', 'getById');
+            Route::post('/attendance', 'attendance');
             Route::get('/getByIdGuest/{id}', 'getByIdGuest');
             Route::post('/update/{id}', 'update');
             Route::post('/delete/{id}', 'destroy');
+            Route::get('/guestStats/{id}', 'guestStats');
+        });
+    });
+
+    Route::controller(RsvpController::class)->group(function () {
+        Route::prefix('rsvp')->group(function () {
+            Route::get('/getById/{id}', 'getById');
+        });
+    });
+    Route::controller(WhatsAppController::class)->group(function () {
+        Route::prefix('whatsapp')->group(function () {
+            Route::post('/runWhatsAppBot', 'runWhatsAppBot');
         });
     });
 });

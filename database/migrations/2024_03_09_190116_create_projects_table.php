@@ -18,6 +18,7 @@ return new class extends Migration
             $table->longText('html')->nullable();
             $table->longText('css')->nullable();
             $table->string('project_name')->nullable(false);
+            $table->softDeletes();
 
             $table->timestamps();
 
