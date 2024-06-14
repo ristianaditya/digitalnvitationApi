@@ -33,6 +33,32 @@ class TransactionsController extends Controller
         }else{
             $currentDateTime = date("Y-m-d H:i:s");
             $expiredTime = date("Y-m-d H:i:s", strtotime('+7 days', strtotime($currentDateTime)));
+
+            $user = JWTAuth::parseToken()->authenticate();
+            $transactionFree = Transactions::where('user_id', $user->id)->where('subscribe', 'DigitalDazzle')->first();
+            if(!$transactionFree){
+                $transaction = Transactions::create(array_merge(
+                    $validator->validated(),
+                    ['subscribe_start' => $currentDateTime],
+                    ['subscribe_expired' => $expiredTime],
+                ));
+                if($transaction) {
+                    return response()->json([
+                        'success' => true,
+                        'message' => 'Transaction successfully created',
+                    ], 200);
+                }else{
+                    return response()->json([
+                        'success' => false,
+                    ], 409);
+                }
+            }else{
+                return response()->json([
+                    'success' => false,
+                    'data' => $transactionFree,
+                    'message' => 'DigitalDazzle has already claimed before',
+                ], 409);
+            }
         }
 
         $transaction = Transactions::create(array_merge(
