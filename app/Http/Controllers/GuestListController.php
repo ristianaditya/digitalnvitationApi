@@ -71,16 +71,13 @@ class GuestListController extends Controller
         }
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
     public function create(Request $request)
     {
         try {
             $validator = Validator::make($request->all(), [
                 'invitation_id' => 'required',
-                'name' => 'required|string|between:3,100',
-                'no_phone' => 'required',
+                'name' => 'required|string|between:3,100|unique:guest_lists',
+                'no_phone' => 'required|string|unique:guest_lists',
                 'attendance' => 'in:attended,absent,unconfirmed',
             ]);
             if ($validator->fails()) {
