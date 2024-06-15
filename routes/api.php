@@ -79,6 +79,7 @@ Route::middleware('auth:api')->group(function () {
             Route::post('/create', 'create');
             Route::post('/getByProject/{id}', 'getByProject');
             Route::post('/getInvitation/{id}', 'getInvitation');
+            Route::post('/getTransaction/{id}', 'getTransaction');
             Route::post('/editClipbord', 'editClipbord');
             Route::post('/delete/{id}', 'destroy');
         });

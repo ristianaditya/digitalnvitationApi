@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Carbon\Carbon;
+use App\Models\User;
 use App\Models\familydata;
 use App\Models\Invitations;
 use Illuminate\Http\Request;
@@ -157,5 +158,22 @@ class InvitationsController extends Controller
         return response()->json([
             'message' => 'Invitations deleted successfully'
         ]);
+    }
+    public function getTransaction($link)
+    {
+        try {
+            $invitations = Invitations::where('invite_link', $link)
+            ->first();
+            $userWithTransaction = User::with(['latestTransaction'])->find($invitations->user_id);
+            return response()->json([
+                'success' => true,
+                'data' => $userWithTransaction
+            ], 200);
+        } catch (\Throwable $th) {
+            return response()->json([
+                'success' => false,
+                'message' => $th->getMessage(),
+            ], 401);
+        }
     }
 }
