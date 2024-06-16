@@ -57,6 +57,7 @@ Route::middleware('auth:api')->group(function () {
             Route::post('/getById/{id}', 'getById');
             Route::post('/update/{id}', 'update');
             Route::post('/getByUserId', 'getByUserId');
+            Route::post('/destroy/{id}', 'destroy');
         });
     });
     Route::controller(ImageUploadersController::class)->group(function () {
