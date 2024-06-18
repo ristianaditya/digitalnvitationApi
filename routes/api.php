@@ -49,6 +49,9 @@ Route::middleware('auth:api')->group(function () {
             Route::post('/createPayment', 'createPayment');
             Route::post('/showToken', 'showToken');
             Route::get('/historyByUser', 'historyByUser');
+            Route::get('/transactionExport', 'transactionExport');
+            Route::get('/getMonthlyTransaction', 'getMonthlyTransaction');
+            Route::get('/getCardDashboard', 'getCardDashboard');
         });
     });
     Route::controller(ProjectsController::class)->group(function () {
