@@ -21,7 +21,7 @@ return new class extends Migration
             $table->enum('gender', ['male', 'female'])->nullable();
             $table->enum('role', ['admin', 'user'])->nullable()->default('user');
             $table->string('address')->nullable();
-            $table->string('picture')->nullable();
+            $table->longText('picture')->nullable();
             $table->timestamps();
 
             $table->softDeletes();

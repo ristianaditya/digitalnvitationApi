@@ -1,0 +1,13 @@
+{
+  "type": "service_account",
+  "project_id": "groovy-camera-427507-s3",
+  "private_key_id": "5becce157ead935b671cb906477ed5bcb3495bc1",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvwIBADANBgkqhkiG9w0BAQEFAASCBKkwggSlAgEAAoIBAQDoj8Pj0nKib5N3\nAtCfQdnzWaIDxoh+HFFkKYUNwSqpqRfCpXA09DW97qnXUX3NV8DnCMIVJfNAkHjB\n7vhAmCQuHV1CM7nsrvowfRSj0D6Ta0utVwqVLdTL/Xb3+8/wW0MTGlIoJ5Wvhwph\nLzLnYQpAd5KBiXr9sEPWmEMeG1CmmSJot2XxxDzy54O/vXQq+qIdOzyykujL2Qfq\nIXF7biUQL/VIXDzqfEDrVjU1mjQnJazkQ9mNaTOVx42d47d5q/8MUCZM2twExO8E\n4cvasHrxXYAuWSMnRou4IwVNmxAg36v0hDgNWBwiQhh0zAANNlQcavzyeklF8SPw\nG8gRDZHZAgMBAAECggEAFxXKSq+lvHUZ7MrlPaHSSkM//2LyQp55/9jVQdfGbeAA\noUw91qvVN9zclCidNch7uBNY/LNvMZ4Ftq6LixHvKXq1urAaySFXaX/JEDfINmcE\ntJi6zrMld/hZmmUvL3tHrbpDpIPFao6bm6kNQwWReHPGIcCtakhYe5FSvEbW2yqQ\n20biZ3C3CalhHAjg/EEn4Rh4Gy39MkMg3BAZZqmdj1IZDF/LOlEFHinthd08FMpJ\n+N3qRCD5tBiv+4I+lkc4lNe9lQIZ2yekGbICtFinzEa9JFmy6emgXL/msXOiVL7e\nyy9yHCQ3XVF4P3iwBuBUSaZDaH187FZWHSXVzkDvQQKBgQD3FaTd45nl9T9WhMFu\npdW2nwpSqtOs0WxQDT6haoiZCXfhTfvZkpwawRlx4sOh/ygksWYp4dCfdfbR8IjJ\nscA83Qd5KD5rFeH52McBQAEemjmMe24i4kZrBS27QWCv6K8cWLat42urb9yQ6iLL\nMpSM/16DZf9mBg2ndaGqSj/KMQKBgQDw8/hvNj1yG9e42i5AswCsDHjDAfBeidjz\nABZdSZ72Lc7yQUs2iZYSo7aMR36ukR9dJGimcNC4SQpIBBOZzejuRn0OT7GO98Ko\n73/PaSWvN4o1pfA0Z9gx643+idMWUowSJ4et80qHa79x0nC3u+d7cRTat4PI1QAO\npkbsDX0wKQKBgQDs1WA8F4dSdmsJoSJPzsE01OjuKDPROMObT7ayvgzEs+Cmozs+\nZ1seAe1Dzlo6kvqFgU0t4/c2gbndrbNPsQNU03/wT/TUbBs4guLtfc4U6Ts0PrNo\n2H8q4cHd9WKZ+myuvRINRynTH9vJQ8OqBYeCRtzvEftmbXL1Crm1IopWYQKBgQCT\nKM4ATiY0/OBBm69IAItWiL9wikyd0J7ZuqHuE7qsK8oKluoywtEPTUF+Z2PtheCb\n6FKp5Jj1FFbdKPA3rVSnwhE6nl2ZLaSLvMpYiKVlYAxfO5t6xjl6M50jalWrenrl\n05LAIKjSEHJ6N8Zz0KVN9QCBnDc2fzBrwg3quUpOEQKBgQCGBu3uHhomNb04WKGE\nSM7spMK6+di5waHDGTNRPU/NckvPQAE6nqT95YS7q8RzYEg890DKXpyl2Zx7zDGc\ntH3rFfYjL3mhFBzmJa8w2aCS+Pgf8nJnMiWt4MS8Rmai7bl5AtKeGRdU8oncPO1o\nnlgQCxi90rhsfL4UlixdOsuQMg==\n-----END PRIVATE KEY-----\n",
+  "client_email": "digi-service@groovy-camera-427507-s3.iam.gserviceaccount.com",
+  "client_id": "114432120823228465118",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/digi-service%40groovy-camera-427507-s3.iam.gserviceaccount.com",
+  "universe_domain": "googleapis.com"
+}

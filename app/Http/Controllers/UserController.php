@@ -12,6 +12,8 @@ use App\Http\Requests\UserRegisterRequest;
 use Illuminate\Http\Exceptions\HttpResponseException;
 use PHPOpenSourceSaver\JWTAuth\Facades\JWTAuth;
 use PHPOpenSourceSaver\JWTAuth\Exceptions\JWTException;
+use Illuminate\Support\Facades\Storage;
+use Google\Cloud\Storage\StorageClient;
 
 class UserController extends Controller
 {
@@ -211,10 +213,20 @@ class UserController extends Controller
                 // Membuat nama baru untuk file
                 $newFileName = $currentDateTime . '_' . $originalFileName;
 
-                // Simpan file ke direktori tertentu
-                $file->move(public_path('avatars'), $newFileName);
+                // Upload file ke Google Cloud Storage
+                $filePath = 'avatars/' . $newFileName;
+                Storage::disk('gcs')->put($filePath, file_get_contents($file));
 
-                $fileUrl = asset('avatars/' . $newFileName);
+                // Membuat URL untuk file yang diupload
+                $storage = new StorageClient([
+                    'projectId' => env('GOOGLE_CLOUD_PROJECT_ID'),
+                    'keyFilePath' => storage_path('app/google-cloud-key.json'),
+                ]);
+                $bucket = $storage->bucket(env('GOOGLE_CLOUD_STORAGE_BUCKET'));
+                $object = $bucket->object($filePath);
+
+                // URL publik
+                $fileUrl = $object->signedUrl(new \DateTime('tomorrow'));
 
                 $user->update(['picture' => $fileUrl]);
 
