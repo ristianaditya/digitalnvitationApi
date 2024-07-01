@@ -2,11 +2,13 @@
 
 namespace App\Models;
 
+use App\Models\Projects;
+use App\Models\Transactions;
+use Illuminate\Support\Carbon;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use PHPOpenSourceSaver\JWTAuth\Contracts\JWTSubject;
 use Illuminate\Foundation\Auth\User as Authenticatable;
-use Illuminate\Support\Carbon;
 
 class User extends Authenticatable implements JWTSubject
 {

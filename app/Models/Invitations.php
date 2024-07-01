@@ -2,6 +2,9 @@
 
 namespace App\Models;
 
+use App\Models\Musics;
+use App\Models\Projects;
+use App\Models\familydata;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -37,7 +40,7 @@ class Invitations extends Model
 
     public function familydata()
     {
-        return $this->hasOne(FamilyData::class, 'invitation_id');
+        return $this->hasOne(familydata::class, 'invitation_id');
     }
 
     public function project(): BelongsTo
