@@ -29,6 +29,11 @@ Route::middleware('api')->group(function () {
         Route::post('/login', 'login');
         Route::post('/logout', 'logout');
     });
+    Route::controller(InvitationsController::class)->group(function () {
+        Route::prefix('invitations')->group(function () {
+            Route::post('/getInvitation/{id}', 'getInvitation');
+        });
+    });
 });
 
 Route::middleware('auth:api')->group(function () {
@@ -82,7 +87,6 @@ Route::middleware('auth:api')->group(function () {
             Route::get('/getAll', 'getAll');
             Route::post('/create', 'create');
             Route::post('/getByProject/{id}', 'getByProject');
-            Route::post('/getInvitation/{id}', 'getInvitation');
             Route::post('/getTransaction/{id}', 'getTransaction');
             Route::post('/editClipbord', 'editClipbord');
             Route::post('/delete/{id}', 'destroy');
