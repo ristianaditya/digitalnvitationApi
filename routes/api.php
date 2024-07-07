@@ -35,6 +35,11 @@ Route::middleware('api')->group(function () {
             Route::post('/getTransaction/{id}', 'getTransaction');
         });
     });
+    Route::controller(RsvpController::class)->group(function () {
+        Route::prefix('rsvp')->group(function () {
+            Route::post('/create', 'create');
+        });
+    });
 });
 
 Route::middleware('auth:api')->group(function () {
