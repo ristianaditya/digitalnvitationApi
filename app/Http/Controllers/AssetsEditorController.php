@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Storage;
 use Google\Cloud\Storage\StorageClient;
+use PHPOpenSourceSaver\JWTAuth\Facades\JWTAuth;
 
 class AssetsEditorController extends Controller
 {
@@ -51,11 +52,13 @@ class AssetsEditorController extends Controller
 
                 // URL publik
                 $fileUrl = $object->signedUrl(new \DateTime('tomorrow'));
+                $user = JWTAuth::parseToken()->authenticate();
 
                 assetsEditor::create(
                     array_merge(
                         $validator->validated(),
-                        ['file_path' => $fileUrl]
+                        ['file_path' => $fileUrl],
+                        ['user_id' => $user->id],
                     ));
 
                 return response()->json(['message' => 'File successfully created']);
@@ -103,12 +106,14 @@ class AssetsEditorController extends Controller
 
                 // URL publik
                 $fileUrl = $object->signedUrl(new \DateTime('tomorrow'));
+                $user = JWTAuth::parseToken()->authenticate();
 
                 $file = assetsEditor::find($id);
                 $file->update(
                     array_merge(
                         $validator->validated(),
-                        ['file_path' => $fileUrl]
+                        ['file_path' => $fileUrl],
+                        ['user_id' => $user->id],
                     ));
 
                 return response()->json(['message' => 'File successfully updated']);

@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('user_id')->nullable(false);
             $table->string('file_name', 100)->nullable(false);
-            $table->string('file_path', 100)->nullable(false);
+            $table->longText('file_path')->nullable(false);
             $table->enum('type', ['image', 'video'])->nullable(true)->default('image');
             $table->timestamps();
 
