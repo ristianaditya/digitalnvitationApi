@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AssetsEditorController;
 use Midtrans\Transaction;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -108,7 +109,6 @@ Route::middleware('auth:api')->group(function () {
             Route::get('/guestStats/{id}', 'guestStats');
         });
     });
-
     Route::controller(RsvpController::class)->group(function () {
         Route::prefix('rsvp')->group(function () {
             Route::get('/getById/{id}', 'getById');
@@ -117,6 +117,15 @@ Route::middleware('auth:api')->group(function () {
     Route::controller(WhatsAppController::class)->group(function () {
         Route::prefix('whatsapp')->group(function () {
             Route::post('/runWhatsAppBot', 'runWhatsAppBot');
+        });
+    });
+    Route::controller(AssetsEditorController::class)->group(function () {
+        Route::prefix('assets')->group(function () {
+            Route::get('/getAssets', 'getAll');
+            Route::post('getById/{id}', 'getById');
+            Route::post('/createAssets', 'create');
+            Route::post('/update/{id}', 'update');
+            Route::post('/delete/{id}', 'destroy');
         });
     });
 });

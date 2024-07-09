@@ -20,9 +20,6 @@ class MusicsController extends Controller
         return response()->json(['musics' => $musics], 200);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
     public function create(Request $request)
     {
         try {
@@ -95,10 +92,20 @@ class MusicsController extends Controller
                 // Membuat nama baru untuk file
                 $newFileName = $currentDateTime . '_' . $originalFileName;
 
-                // Simpan file ke direktori tertentu
-                $file->move(public_path('musics'), $newFileName);
+                // Upload file ke Google Cloud Storage
+                $filePath = 'musics/' . $newFileName;
+                Storage::disk('gcs')->put($filePath, file_get_contents($file));
 
-                $fileUrl = asset('musics/' . $newFileName);
+                // Membuat URL untuk file yang diupload
+                $storage = new StorageClient([
+                    'projectId' => env('GOOGLE_CLOUD_PROJECT_ID'),
+                    'keyFilePath' => storage_path('app/google-cloud-key.json'),
+                ]);
+                $bucket = $storage->bucket(env('GOOGLE_CLOUD_STORAGE_BUCKET'));
+                $object = $bucket->object($filePath);
+
+                // URL publik
+                $fileUrl = $object->signedUrl(new \DateTime('tomorrow'));
 
                 $musics = Musics::find($id);
                 $musics->update(
