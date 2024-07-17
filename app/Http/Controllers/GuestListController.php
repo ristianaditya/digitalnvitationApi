@@ -3,9 +3,13 @@
 namespace App\Http\Controllers;
 
 use App\Models\rsvp;
+use App\Models\Projects;
 use App\Models\guestList;
+use App\Models\Invitations;
 use Illuminate\Http\Request;
+use App\Imports\GuestListImport;
 use App\Http\Controllers\Controller;
+use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Support\Facades\Validator;
 use PHPOpenSourceSaver\JWTAuth\Facades\JWTAuth;
 
@@ -56,7 +60,6 @@ class GuestListController extends Controller
             ], 500);
         }
     }
-
 
     public function getByIdGuest($id)
     {
@@ -178,4 +181,23 @@ class GuestListController extends Controller
             ], 500);
         }
     }
+
+    public function import(Request $request)
+    {
+        $invite = Invitations::where('project_id', $request->project_id)->first();
+        try {
+            if ($request->hasFile('excel')) {
+                $file = $request->file('excel');
+                Excel::import(new GuestListImport($invite->id), $file);
+                return response()->json(['message' => 'File imported successfully'], 200);
+            }
+            return response()->json(['message' => 'No file uploaded'], 400);
+        } catch (\Throwable $th) {
+            return response()->json([
+                'success' => false,
+                'message' => $th->getMessage(),
+            ], 409);
+        }
+    }
+
 }

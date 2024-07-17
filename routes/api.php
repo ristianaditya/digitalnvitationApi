@@ -101,6 +101,7 @@ Route::middleware('auth:api')->group(function () {
     Route::controller(GuestListController::class)->group(function () {
         Route::prefix('guest')->group(function () {
             Route::post('/create', 'create');
+            Route::post('/import', 'import');
             Route::get('/getById/{id}', 'getById');
             Route::post('/attendance', 'attendance');
             Route::get('/getByIdGuest/{id}', 'getByIdGuest');

@@ -11,8 +11,10 @@
         "laravel/framework": "^10.10",
         "laravel/sanctum": "^3.3",
         "laravel/tinker": "^2.8",
+        "maatwebsite/excel": "^3.1",
         "midtrans/midtrans-php": "^2.5",
         "php-open-source-saver/jwt-auth": "^2.1",
+        "psr/simple-cache": "1.0",
         "sawirricardo/laravel-midtrans": "^1.6",
         "spatie/laravel-google-cloud-storage": "^2.3",
         "wppconnect-team/wppconnect-laravel-client": "^1.0"
