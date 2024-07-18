@@ -51,7 +51,7 @@ class AssetsEditorController extends Controller
                 $object = $bucket->object($filePath);
 
                 // URL publik
-                $fileUrl = $object->signedUrl(new \DateTime('tomorrow'));
+                $fileUrl = "https://storage.googleapis.com/digiapicloud/{$filePath}";
                 $user = JWTAuth::parseToken()->authenticate();
 
                 assetsEditor::create(
@@ -105,7 +105,7 @@ class AssetsEditorController extends Controller
                 $object = $bucket->object($filePath);
 
                 // URL publik
-                $fileUrl = $object->signedUrl(new \DateTime('tomorrow'));
+                $fileUrl = "https://storage.googleapis.com/digiapicloud/{$filePath}";
                 $user = JWTAuth::parseToken()->authenticate();
 
                 $file = assetsEditor::find($id);

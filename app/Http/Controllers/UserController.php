@@ -226,7 +226,7 @@ class UserController extends Controller
                 $object = $bucket->object($filePath);
 
                 // URL publik
-                $fileUrl = $object->signedUrl(new \DateTime('tomorrow'));
+                $fileUrl = "https://storage.googleapis.com/digiapicloud/{$filePath}";
 
                 $user->update(['picture' => $fileUrl]);
 
