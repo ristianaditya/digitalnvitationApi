@@ -50,6 +50,141 @@ class UserController extends Controller
         ], 409);
     }
 
+    public function create(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'name'      => 'string|between:2,100',
+            'email'     => 'required|email|unique:users',
+            'username'     => 'required|unique:users',
+            'no_phone' => 'unique:users',
+            'gender' => 'in:male,female',
+            'role' => 'in:admin,user',
+            'password'  => 'required|min:8',
+            'address'  => 'string|min:8',
+        ]);
+        $fileUrl = '';
+
+        if ($validator->fails()) {
+            return response()->json($validator->errors(), 422);
+        }
+
+        if ($request->hasFile('file')) {
+            $file = $request->file('file');
+            $originalFileName = $file->getClientOriginalName();
+
+            // Mendapatkan tanggal dan waktu saat ini
+            $currentDateTime = now()->format('YmdHis');
+
+            // Membuat nama baru untuk file
+            $newFileName = $currentDateTime . '_' . $originalFileName;
+
+            // Upload file ke Google Cloud Storage
+            $filePath = 'avatars/' . $newFileName;
+            Storage::disk('gcs')->put($filePath, file_get_contents($file));
+
+            // Membuat URL untuk file yang diupload
+            $storage = new StorageClient([
+                'projectId' => env('GOOGLE_CLOUD_PROJECT_ID'),
+                'keyFilePath' => storage_path('app/google-cloud-key.json'),
+            ]);
+            $bucket = $storage->bucket(env('GOOGLE_CLOUD_STORAGE_BUCKET'));
+            $object = $bucket->object($filePath);
+
+            // URL publik
+            $fileUrl = "https://storage.googleapis.com/digiapicloud/{$filePath}";
+        }
+
+        $user = User::create(array_merge(
+            $validator->validated(),
+            ['password' => bcrypt($request->password)],
+            ['picture' => $fileUrl],
+        ));
+
+        if($user) {
+            return response()->json([
+                'success' => true,
+                'message' => 'User successfully registered',
+            ], 201);
+        }
+
+        return response()->json([
+            'success' => false,
+        ], 409);
+    }
+
+    public function updateAdmin(Request $request, User $user)
+    {
+        $validator = Validator::make($request->all(), [
+            'name'      => 'string|between:2,100',
+            'email'     => 'email|unique:users,email,'.$user->id,
+            'username'     => 'string|between:2,100|unique:users,username,'.$user->id,
+            'no_phone' => 'between:6,15|unique:users,no_phone,'.$user->id,
+            'gender' => 'in:male,female',
+            'role' => 'in:admin,user',
+            'address' => 'string|between:2,200',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json($validator->errors(), 422);
+        }
+
+        if ($request->hasFile('file')) {
+            $file = $request->file('file');
+            $originalFileName = $file->getClientOriginalName();
+
+            // Mendapatkan tanggal dan waktu saat ini
+            $currentDateTime = now()->format('YmdHis');
+
+            // Membuat nama baru untuk file
+            $newFileName = $currentDateTime . '_' . $originalFileName;
+
+            // Upload file ke Google Cloud Storage
+            $filePath = 'avatars/' . $newFileName;
+            Storage::disk('gcs')->put($filePath, file_get_contents($file));
+
+            // Membuat URL untuk file yang diupload
+            $storage = new StorageClient([
+                'projectId' => env('GOOGLE_CLOUD_PROJECT_ID'),
+                'keyFilePath' => storage_path('app/google-cloud-key.json'),
+            ]);
+            $bucket = $storage->bucket(env('GOOGLE_CLOUD_STORAGE_BUCKET'));
+            $object = $bucket->object($filePath);
+
+            // URL publik
+            $fileUrl = "https://storage.googleapis.com/digiapicloud/{$filePath}";
+            if($request->password){
+                $user->update(
+                    array_merge(
+                        $validator->validated(),
+                        ['picture' => $fileUrl],
+                        ['password' => bcrypt($request->password)],
+                    ));
+            }else{
+                $user->update(
+                array_merge(
+                    $validator->validated(),
+                    ['picture' => $fileUrl]
+                ));
+            }
+        }
+
+        if($request->password){
+            $user->update(
+                array_merge(
+                    $validator->validated(),
+                    ['password' => bcrypt($request->password)],
+                ));
+        }else{
+            $user->update($validator->validated());
+        }
+
+        return response()->json([
+            'success' => true,
+            'data' => $user
+        ], 201);
+    }
+
+
     public function login(Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -271,5 +406,18 @@ class UserController extends Controller
             ], 401);
         }
 
+    }
+
+    public function destroy($id)
+    {
+        $users = User::find($id);
+        if (!$users) {
+            return response()->json(['message' => 'User not found'], 404);
+        }
+        $users->delete();
+
+        return response()->json([
+            'message' => 'User deleted successfully'
+        ]);
     }
 }

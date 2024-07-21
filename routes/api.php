@@ -48,12 +48,15 @@ Route::middleware('auth:api')->group(function () {
         Route::prefix('user')->group(function () {
             Route::get('/getUser', 'getUser');
             Route::get('/user', 'user');
-            Route::get('/showUser/{user}', 'showUser');
+            Route::post('/showUser/{user}', 'showUser');
             Route::post('/refreshToken', 'refreshToken');
+            Route::post('/create', 'create');
             Route::post('/getSession', 'getSession');
             Route::post('/uploadPhoto/{user}', 'uploadPhoto');
             Route::post('/updateUser/{user}', 'update');
             Route::post('/updatePassword/{user}', 'updatePassword');
+            Route::post('/updateAdmin/{user}', 'updateAdmin');
+            Route::post('/delete/{id}', 'destroy');
         });
     });
     Route::controller(TransactionsController::class)->group(function () {
