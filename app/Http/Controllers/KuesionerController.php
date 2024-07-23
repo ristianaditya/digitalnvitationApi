@@ -44,6 +44,12 @@ class KuesionerController extends Controller
         $data = kuesioner::with('user')->get();
         return response()->json(['data' => $data], 200);
     }
+    public function getByIdCount()
+    {
+        $user = JWTAuth::parseToken()->authenticate();
+        $data = kuesioner::where('user_id', $user->id)->count();
+        return response()->json(['data' => $data], 200);
+    }
     public function feedbackExport(Request $request)
     {
         $quiz = kuesioner::with('user')->get();

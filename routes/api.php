@@ -119,6 +119,7 @@ Route::middleware('auth:api')->group(function () {
             Route::post('/create', 'create');
             Route::get('/getAll', 'getAll');
             Route::get('/feedbackExport', 'feedbackExport');
+            Route::get('/getByIdCount', 'getByIdCount');
         });
     });
     Route::controller(WhatsAppController::class)->group(function () {
