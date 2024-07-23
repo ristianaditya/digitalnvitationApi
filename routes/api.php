@@ -78,11 +78,6 @@ Route::middleware('auth:api')->group(function () {
             Route::post('/destroy/{id}', 'destroy');
         });
     });
-    Route::controller(ImageUploadersController::class)->group(function () {
-        Route::prefix('images')->group(function () {
-            Route::post('/createImage', 'createImage');
-        });
-    });
     Route::controller(MusicsController::class)->group(function () {
         Route::prefix('musics')->group(function () {
             Route::get('/getMusics', 'getAll');
