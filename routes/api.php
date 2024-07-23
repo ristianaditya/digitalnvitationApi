@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AssetsEditorController;
+use App\Http\Controllers\KuesionerController;
 use Midtrans\Transaction;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -111,6 +112,13 @@ Route::middleware('auth:api')->group(function () {
     Route::controller(RsvpController::class)->group(function () {
         Route::prefix('rsvp')->group(function () {
             Route::get('/getById/{id}', 'getById');
+        });
+    });
+    Route::controller(KuesionerController::class)->group(function () {
+        Route::prefix('quiz')->group(function () {
+            Route::post('/create', 'create');
+            Route::get('/getAll', 'getAll');
+            Route::get('/feedbackExport', 'feedbackExport');
         });
     });
     Route::controller(WhatsAppController::class)->group(function () {
