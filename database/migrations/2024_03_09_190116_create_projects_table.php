@@ -17,6 +17,7 @@ return new class extends Migration
             $table->longText('editor')->nullable(false);
             $table->longText('html')->nullable();
             $table->longText('css')->nullable();
+            $table->longText('canvas')->nullable();
             $table->string('project_name')->nullable(false);
             $table->softDeletes();
 

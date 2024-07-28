@@ -26,6 +26,7 @@ class Projects extends Model
         'editor',
         'html',
         'css',
+        'canvas',
         'project_name',
     ];
 

@@ -35,7 +35,7 @@ class ProjectsController extends Controller
         }
         $project = Projects::updateOrCreate(
             ['id' => $request->id],
-            ['user_id' => $user->id, 'editor' => $request->editor, 'html' => $request->html, 'css' => $request->css, 'project_name' => $request->project_name]
+            ['user_id' => $user->id, 'editor' => $request->editor, 'html' => $request->html, 'css' => $request->css, 'canvas' => $request->canvas, 'project_name' => $request->project_name]
         );
 
         return response()->json(['message' => 'Project created/updated successfully', 'project' => $project], 200);
