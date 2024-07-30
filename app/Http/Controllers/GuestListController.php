@@ -2,12 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use Carbon\Carbon;
 use App\Models\rsvp;
 use App\Models\Projects;
 use App\Models\guestList;
 use App\Models\Invitations;
 use Illuminate\Http\Request;
 use App\Imports\GuestListImport;
+use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Support\Facades\Validator;
@@ -44,7 +46,7 @@ class GuestListController extends Controller
                 ->withWhereHas('invitation', function ($query) use ($request) {
                     $query->where('invite_link', $request->invite_link);
                 })
-                ->update(['attendance' => 'attended']);
+                ->update(['attendance' => 'attended', 'time_attend' => Carbon::now()->setTimezone('Asia/Jakarta')]);
 
             if($guests) {
                 return response()->json([
@@ -200,4 +202,38 @@ class GuestListController extends Controller
         }
     }
 
+    public function getAttendance($id)
+    {
+        try {
+            $hours = array_fill(0, 12, 0);
+
+            $invitation = Invitations::where('project_id', $id)->first();
+
+            if(!!$invitation){
+                $attendanceCounts = GuestList::with('invitation')->select(DB::raw('EXTRACT(HOUR FROM time_attend) as hour'), DB::raw('count(*) as count'))
+                    ->where('attendance', 'attended')
+                    ->where('invitation_id', $invitation->id)
+                    ->groupBy(DB::raw('EXTRACT(HOUR FROM time_attend)'))
+                    ->get();
+
+                // Mengisi array hasil dengan data yang diambil dari query
+                foreach ($attendanceCounts as $attendance) {
+                    $hour = (int) $attendance->hour;
+                    if ($hour >= 6 && $hour < 18) { // Hanya untuk jam 06:00 hingga 17:00
+                        $index = $hour - 6; // Mengubah jam menjadi indeks array (06:00 menjadi 0, 07:00 menjadi 1, dst)
+                        $hours[$index] = $attendance->count;
+                    }
+                }
+                return response()->json([
+                    'success' => true,
+                    'data' => $hours,
+                ], 200);
+            }
+        } catch (\Throwable $th) {
+            return response()->json([
+                'success' => false,
+                'message' => $th->getMessage(),
+            ], 500);
+        }
+    }
 }

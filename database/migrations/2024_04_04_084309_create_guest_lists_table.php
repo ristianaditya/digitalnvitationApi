@@ -17,6 +17,7 @@ return new class extends Migration
             $table->string('name', 100)->nullable(false);
             $table->string('no_phone', 20)->nullable();
             $table->enum('attendance', ['attended', 'absent', 'unconfirmed'])->nullable()->default('unconfirmed');
+            $table->timestamp('time_attend', $precision = 0)->nullable();
             $table->timestamps();
             $table->softDeletes();
 

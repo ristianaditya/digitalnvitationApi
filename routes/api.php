@@ -13,7 +13,6 @@ use App\Http\Controllers\WhatsAppController;
 use App\Http\Controllers\GuestListController;
 use App\Http\Controllers\InvitationsController;
 use App\Http\Controllers\TransactionsController;
-use App\Http\Controllers\ImageUploadersController;
 
 /*
 |--------------------------------------------------------------------------
@@ -107,11 +106,13 @@ Route::middleware('auth:api')->group(function () {
             Route::post('/update/{id}', 'update');
             Route::post('/delete/{id}', 'destroy');
             Route::get('/guestStats/{id}', 'guestStats');
+            Route::get('/getAttendance/{id}', 'getAttendance');
         });
     });
     Route::controller(RsvpController::class)->group(function () {
         Route::prefix('rsvp')->group(function () {
             Route::get('/getById/{id}', 'getById');
+            Route::get('/guestStats/{id}', 'guestStats');
         });
     });
     Route::controller(KuesionerController::class)->group(function () {

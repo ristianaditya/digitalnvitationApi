@@ -38,10 +38,6 @@ class User extends Authenticatable implements JWTSubject
     {
         return $this->hasMany(Projects::class, "user_id", "id");
     }
-    public function imageUploaders(): HasMany
-    {
-        return $this->hasMany(imageUploaders::class, "user_id", "id");
-    }
     public function getJWTIdentifier()
     {
         return $this->getKey();
@@ -54,8 +50,8 @@ class User extends Authenticatable implements JWTSubject
     public function latestTransaction()
     {
         return $this->hasOne(Transactions::class, 'user_id')
-            ->whereDate('subscribe_start', '<=', Carbon::now())
-            ->whereDate('subscribe_expired', '>=', Carbon::now())
+            ->whereDate('subscribe_start', '<=', Carbon::now()->setTimezone('Asia/Jakarta'))
+            ->whereDate('subscribe_expired', '>=', Carbon::now()->setTimezone('Asia/Jakarta'))
             ->latest('subscribe_start');
     }
 }

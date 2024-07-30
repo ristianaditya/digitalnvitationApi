@@ -2,13 +2,15 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Invitations;
 use App\Models\rsvp;
 use App\Models\Projects;
-use Illuminate\Http\Request;
-use App\Http\Controllers\Controller;
 use App\Models\guestList;
+use App\Models\Invitations;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Validator;
+use PhpParser\Node\Stmt\TryCatch;
 
 class RsvpController extends Controller
 {
@@ -70,6 +72,45 @@ class RsvpController extends Controller
             return response()->json([
                 'success' => false,
                 'message' => $th->getMessage(),
+            ], 500);
+        }
+    }
+
+    public function guestStats($id)
+    {
+        try {
+            $invitation = Invitations::where('project_id', $id)->first();
+            $totalGreetings = rsvp::with('guest.invitation')
+            ->whereHas('guest.invitation', function ($query) use ($id) {
+                $query->where('project_id', $id);
+            })
+            ->count();
+            $totalGuests = GuestList::with('invitation')
+            ->whereHas('invitation', function ($query) use ($id) {
+                $query->where('project_id', $id);
+            })
+            ->count();
+            $totalAttended = rsvp::with('guest')
+            ->whereHas('guest', function ($query) use ($invitation) {
+                $query->where('invitation_id', $invitation->id);
+            })
+            ->where('attendance', 'attended')->count();
+            $totalNotAttended = rsvp::with('guest')
+            ->whereHas('guest', function ($query) use ($invitation) {
+                $query->where('invitation_id', $invitation->id);
+            })
+            ->where('attendance', '!=', 'attended')->count();
+
+            return response()->json(['data' => [
+                'total_guests' => $totalGuests,
+                'total_attended' => $totalAttended,
+                'total_not_attended' => $totalNotAttended,
+                'total_greetings' => $totalGreetings,
+            ]], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage(),
             ], 500);
         }
     }

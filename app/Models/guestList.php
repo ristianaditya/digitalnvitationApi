@@ -23,6 +23,7 @@ class guestList extends Model
         'name',
         'no_phone',
         'attendance',
+        'time_attend',
     ];
 
     public function invitation()
