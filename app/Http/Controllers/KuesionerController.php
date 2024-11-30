@@ -65,7 +65,7 @@ class KuesionerController extends Controller
             ];
             return [
                 'id' => $quiz->id,
-                'email' => $quiz->user->email,
+                'name' => $quiz->user->name,
                 'question1' => $param[$data->satu],
                 'question2' => $param[$data->dua],
                 'question3' => $param[$data->tiga],

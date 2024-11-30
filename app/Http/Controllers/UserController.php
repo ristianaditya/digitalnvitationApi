@@ -78,20 +78,8 @@ class UserController extends Controller
             // Membuat nama baru untuk file
             $newFileName = $currentDateTime . '_' . $originalFileName;
 
-            // Upload file ke Google Cloud Storage
-            $filePath = 'avatars/' . $newFileName;
-            Storage::disk('gcs')->put($filePath, file_get_contents($file));
-
-            // Membuat URL untuk file yang diupload
-            $storage = new StorageClient([
-                'projectId' => env('GOOGLE_CLOUD_PROJECT_ID'),
-                'keyFilePath' => storage_path('app/google-cloud-key.json'),
-            ]);
-            $bucket = $storage->bucket(env('GOOGLE_CLOUD_STORAGE_BUCKET'));
-            $object = $bucket->object($filePath);
-
-            // URL publik
-            $fileUrl = "https://storage.googleapis.com/digiapicloud/{$filePath}";
+            $file->move(public_path('avatars'), $newFileName);
+            $fileUrl = asset('avatars/' . $newFileName);
         }
 
         $user = User::create(array_merge(
@@ -138,20 +126,9 @@ class UserController extends Controller
             // Membuat nama baru untuk file
             $newFileName = $currentDateTime . '_' . $originalFileName;
 
-            // Upload file ke Google Cloud Storage
-            $filePath = 'avatars/' . $newFileName;
-            Storage::disk('gcs')->put($filePath, file_get_contents($file));
+            $file->move(public_path('avatars'), $newFileName);
+            $fileUrl = asset('avatars/' . $newFileName);
 
-            // Membuat URL untuk file yang diupload
-            $storage = new StorageClient([
-                'projectId' => env('GOOGLE_CLOUD_PROJECT_ID'),
-                'keyFilePath' => storage_path('app/google-cloud-key.json'),
-            ]);
-            $bucket = $storage->bucket(env('GOOGLE_CLOUD_STORAGE_BUCKET'));
-            $object = $bucket->object($filePath);
-
-            // URL publik
-            $fileUrl = "https://storage.googleapis.com/digiapicloud/{$filePath}";
             if($request->password){
                 $user->update(
                     array_merge(
@@ -183,7 +160,6 @@ class UserController extends Controller
             'data' => $user
         ], 201);
     }
-
 
     public function login(Request $request)
     {
@@ -348,20 +324,8 @@ class UserController extends Controller
                 // Membuat nama baru untuk file
                 $newFileName = $currentDateTime . '_' . $originalFileName;
 
-                // Upload file ke Google Cloud Storage
-                $filePath = 'avatars/' . $newFileName;
-                Storage::disk('gcs')->put($filePath, file_get_contents($file));
-
-                // Membuat URL untuk file yang diupload
-                $storage = new StorageClient([
-                    'projectId' => env('GOOGLE_CLOUD_PROJECT_ID'),
-                    'keyFilePath' => storage_path('app/google-cloud-key.json'),
-                ]);
-                $bucket = $storage->bucket(env('GOOGLE_CLOUD_STORAGE_BUCKET'));
-                $object = $bucket->object($filePath);
-
-                // URL publik
-                $fileUrl = "https://storage.googleapis.com/digiapicloud/{$filePath}";
+                $file->move(public_path('avatars'), $newFileName);
+                $fileUrl = asset('avatars/' . $newFileName);
 
                 $user->update(['picture' => $fileUrl]);
 

@@ -40,20 +40,8 @@ class MusicsController extends Controller
                 // Membuat nama baru untuk file
                 $newFileName = $currentDateTime . '_' . $originalFileName;
 
-               // Upload file ke Google Cloud Storage
-                $filePath = 'musics/' . $newFileName;
-                Storage::disk('gcs')->put($filePath, file_get_contents($file));
-
-                // Membuat URL untuk file yang diupload
-                $storage = new StorageClient([
-                    'projectId' => env('GOOGLE_CLOUD_PROJECT_ID'),
-                    'keyFilePath' => storage_path('app/google-cloud-key.json'),
-                ]);
-                $bucket = $storage->bucket(env('GOOGLE_CLOUD_STORAGE_BUCKET'));
-                $object = $bucket->object($filePath);
-
-                // URL publik
-                $fileUrl = "https://storage.googleapis.com/digiapicloud/{$filePath}";
+                $file->move(public_path('musics'), $newFileName);
+                $fileUrl = asset('musics/' . $newFileName);
 
                 Musics::create(
                     array_merge(
@@ -92,20 +80,8 @@ class MusicsController extends Controller
                 // Membuat nama baru untuk file
                 $newFileName = $currentDateTime . '_' . $originalFileName;
 
-                // Upload file ke Google Cloud Storage
-                $filePath = 'musics/' . $newFileName;
-                Storage::disk('gcs')->put($filePath, file_get_contents($file));
-
-                // Membuat URL untuk file yang diupload
-                $storage = new StorageClient([
-                    'projectId' => env('GOOGLE_CLOUD_PROJECT_ID'),
-                    'keyFilePath' => storage_path('app/google-cloud-key.json'),
-                ]);
-                $bucket = $storage->bucket(env('GOOGLE_CLOUD_STORAGE_BUCKET'));
-                $object = $bucket->object($filePath);
-
-                // URL publik
-                $fileUrl = "https://storage.googleapis.com/digiapicloud/{$filePath}";
+                $file->move(public_path('musics'), $newFileName);
+                $fileUrl = asset('musics/' . $newFileName);
 
                 $musics = Musics::find($id);
                 $musics->update(
