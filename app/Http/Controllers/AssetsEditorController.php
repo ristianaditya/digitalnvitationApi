@@ -38,20 +38,9 @@ class AssetsEditorController extends Controller
                 // Membuat nama baru untuk file
                 $newFileName = $currentDateTime . '_' . $originalFileName;
 
-               // Upload file ke Google Cloud Storage
-                $filePath = 'assets/' . $newFileName;
-                Storage::disk('gcs')->put($filePath, file_get_contents($file));
+                $file->move(public_path('assets'), $newFileName);
+                $fileUrl = asset('assets/' . $newFileName);
 
-                // Membuat URL untuk file yang diupload
-                $storage = new StorageClient([
-                    'projectId' => env('GOOGLE_CLOUD_PROJECT_ID'),
-                    'keyFilePath' => storage_path('app/google-cloud-key.json'),
-                ]);
-                $bucket = $storage->bucket(env('GOOGLE_CLOUD_STORAGE_BUCKET'));
-                $object = $bucket->object($filePath);
-
-                // URL publik
-                $fileUrl = "https://storage.googleapis.com/digiapicloud/{$filePath}";
                 $user = JWTAuth::parseToken()->authenticate();
 
                 assetsEditor::create(
@@ -92,20 +81,9 @@ class AssetsEditorController extends Controller
                 // Membuat nama baru untuk file
                 $newFileName = $currentDateTime . '_' . $originalFileName;
 
-                // Upload file ke Google Cloud Storage
-                $filePath = 'assets/' . $newFileName;
-                Storage::disk('gcs')->put($filePath, file_get_contents($file));
+                $file->move(public_path('assets'), $newFileName);
+                $fileUrl = asset('assets/' . $newFileName);
 
-                // Membuat URL untuk file yang diupload
-                $storage = new StorageClient([
-                    'projectId' => env('GOOGLE_CLOUD_PROJECT_ID'),
-                    'keyFilePath' => storage_path('app/google-cloud-key.json'),
-                ]);
-                $bucket = $storage->bucket(env('GOOGLE_CLOUD_STORAGE_BUCKET'));
-                $object = $bucket->object($filePath);
-
-                // URL publik
-                $fileUrl = "https://storage.googleapis.com/digiapicloud/{$filePath}";
                 $user = JWTAuth::parseToken()->authenticate();
 
                 $file = assetsEditor::find($id);
