@@ -15,8 +15,8 @@ class OtpController extends Controller
         $request->validate(['email' => 'required|email']);
 
         // Generate a random OTP
-        $otp = random_int(100000, 999999);
-
+	$otp = random_int(100000, 999999);
+	$email = $request->email;
         // Calculate expiry time
         $expiresAt = Carbon::now()->addMinutes(5);
 
@@ -27,7 +27,7 @@ class OtpController extends Controller
 	);
 
         // Send the email
-        Mail::to($request->email)->send(new OtpMail($otp));
+        Mail::to($request->email)->send(new OtpMail($otp,$email));
 
         return response()->json(['message' => 'OTP sent successfully to ' . $request->email]);
     }
