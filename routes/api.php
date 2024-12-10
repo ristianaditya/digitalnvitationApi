@@ -13,6 +13,7 @@ use App\Http\Controllers\WhatsAppController;
 use App\Http\Controllers\GuestListController;
 use App\Http\Controllers\InvitationsController;
 use App\Http\Controllers\TransactionsController;
+use App\Http\Controllers\OtpController;
 
 /*
 |--------------------------------------------------------------------------
@@ -25,6 +26,10 @@ use App\Http\Controllers\TransactionsController;
 |
 */
 Route::middleware('api')->group(function () {
+    Route::controller(OtpController::class)->group(function () {
+	Route::post('/send-otp', 'sendOtp');
+	Route::post('/verify-otp','verifyOtp');
+    });
     Route::controller(UserController::class)->group(function () {
         Route::post('/register', 'register');
         Route::post('/login', 'login');
