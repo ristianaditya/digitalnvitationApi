@@ -23,6 +23,7 @@ return new class extends Migration
             $table->string('address')->nullable();
             $table->longText('picture')->nullable();
             $table->string('google_id')->nullable()->unique();
+            $table->boolean('verified')->default(false);
             $table->timestamps();
 
             $table->softDeletes();

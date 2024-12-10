@@ -4,6 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use Illuminate\Support\Str;
+use App\Mail\OtpMail;
+use App\Models\Otp;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Carbon;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\UserResource;
@@ -36,9 +40,22 @@ class UserController extends Controller
 
         $user = User::create(array_merge(
             $validator->validated(),
-            ['password' => bcrypt($request->password)],
+            [
+                'password' => bcrypt($request->password),
+                'verified' => false,
+            ],
         ));
-
+        // Generate a random OTP
+        $otp = random_int(100000, 999999);
+        $email = $request->email;
+        // Calculate expiry time
+        $expiresAt = Carbon::now()->addMinutes(5);
+        // Store or update the OTP in the database
+        Otp::updateOrCreate(
+            ['email' => $request->email],
+            ['otp' => $otp, 'expires_at' => $expiresAt]
+        );
+        Mail::to($request->email)->send(new OtpMail($otp,$email));
         if($user) {
             return response()->json([
                 'success' => true,
@@ -264,6 +281,12 @@ class UserController extends Controller
         }
 
         $user = auth()->guard('api')->user();
+        if (!$user->verified) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Please verify your email before logging in.'
+            ], 403); // 403 Forbidden
+        }
         $user = [
             'name' => $user->name,
             'username' => $user->username,
