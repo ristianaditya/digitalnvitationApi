@@ -3,17 +3,18 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\UserResource;
 use Illuminate\Support\Facades\Hash;
+use Google\Cloud\Storage\StorageClient;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Requests\UserRegisterRequest;
-use Illuminate\Http\Exceptions\HttpResponseException;
 use PHPOpenSourceSaver\JWTAuth\Facades\JWTAuth;
+use Illuminate\Http\Exceptions\HttpResponseException;
 use PHPOpenSourceSaver\JWTAuth\Exceptions\JWTException;
-use Illuminate\Support\Facades\Storage;
-use Google\Cloud\Storage\StorageClient;
 
 class UserController extends Controller
 {
@@ -48,6 +49,87 @@ class UserController extends Controller
         return response()->json([
             'success' => false,
         ], 409);
+    }
+
+    public function registerGoogle(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'name'      => 'required|string|between:2,100',
+            'email'     => 'required|email',
+            'username'  => 'required',
+            'googleId'  => 'required|string',
+            'picture'   => 'sometimes|nullable|string',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json($validator->errors(), 422);
+        }
+
+        $user = User::where('email', $request->email)
+                    ->where('google_id', $request->googleId)
+                    ->first();
+
+        if (!$user) {
+            $user = User::create([
+                'name' => $request->name,
+                'email' => $request->email,
+                'username' => $this->generateUniqueUsername($request->username),
+                'google_id' => $request->googleId,
+                'picture' => $request->picture,
+                'password' => bcrypt(Str::random(40)),
+                'verified' => true,
+            ]);
+        } else {
+            $user->update([
+                'name' => $request->name,
+                'google_id' => $request->googleId,
+                'picture' => $request->picture,
+            ]);
+        }
+
+        try {
+            $token = auth()->guard('api')->login($user);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Authentication failed'
+            ], 401);
+        }
+
+        $userData = [
+            'id' => $user->id,
+            'name' => $user->name,
+            'username' => $user->username,
+            'email' => $user->email,
+            'role' => $user->role ?? 'user',
+            'no_phone' => $user->no_phone,
+            'gender' => $user->gender,
+            'picture' => $user->picture,
+        ];
+
+        $payload = JWTAuth::setToken($token)->getPayload();
+        $expirationTime = $payload->get('exp');
+
+        return response()->json([
+            'success' => true,
+            'data' => $userData,
+            'expires_in' => $expirationTime,
+            'access_token' => $token,
+        ], 200);
+    }
+
+    protected function generateUniqueUsername($baseUsername)
+    {
+        $username = Str::slug($baseUsername);
+        $originalUsername = $username;
+        $counter = 1;
+
+        while (User::where('username', $username)->exists()) {
+            $username = $originalUsername . $counter;
+            $counter++;
+        }
+
+        return $username;
     }
 
     public function create(Request $request)

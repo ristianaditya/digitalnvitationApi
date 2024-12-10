@@ -27,6 +27,7 @@ use App\Http\Controllers\TransactionsController;
 Route::middleware('api')->group(function () {
     Route::controller(UserController::class)->group(function () {
         Route::post('/register', 'register');
+        Route::post('/registerGoogle', 'registerGoogle');
         Route::post('/login', 'login');
         Route::post('/logout', 'logout');
     });

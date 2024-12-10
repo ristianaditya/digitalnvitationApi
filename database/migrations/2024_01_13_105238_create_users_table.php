@@ -22,6 +22,7 @@ return new class extends Migration
             $table->enum('role', ['admin', 'user'])->nullable()->default('user');
             $table->string('address')->nullable();
             $table->longText('picture')->nullable();
+            $table->string('google_id')->nullable()->unique();
             $table->timestamps();
 
             $table->softDeletes();
