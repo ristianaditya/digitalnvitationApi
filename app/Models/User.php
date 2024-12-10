@@ -28,7 +28,8 @@ class User extends Authenticatable implements JWTSubject
         'gender',
         'role',
         'address',
-        'picture'
+        'picture',
+        'verified'
     ];
     public function transactions(): HasMany
     {
