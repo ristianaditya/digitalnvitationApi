@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Mail\OtpMail;
 use App\Models\Otp;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Carbon;
@@ -15,8 +16,8 @@ class OtpController extends Controller
         $request->validate(['email' => 'required|email']);
 
         // Generate a random OTP
-	$otp = random_int(100000, 999999);
-	$email = $request->email;
+        $otp = random_int(100000, 999999);
+        $email = $request->email;
         // Calculate expiry time
         $expiresAt = Carbon::now()->addMinutes(5);
 
@@ -24,7 +25,7 @@ class OtpController extends Controller
         Otp::updateOrCreate(
             ['email' => $request->email],
             ['otp' => $otp, 'expires_at' => $expiresAt]
-	);
+	    );
 
         // Send the email
         Mail::to($request->email)->send(new OtpMail($otp,$email));
@@ -52,6 +53,16 @@ class OtpController extends Controller
         if (Carbon::now()->isAfter($otpRecord->expires_at)) {
             return response()->json(['message' => 'OTP has expired.'], 400);
         }
+
+        // Find the user associated with the email
+        $user = User::where('email', $request->email)->first();
+
+        if (!$user) {
+            return response()->json(['message' => 'User not found.'], 404);
+        }
+
+        // Update the user's verified status
+        $user->update(['verified' => true]);
 
         // OTP verified
         $otpRecord->delete();
