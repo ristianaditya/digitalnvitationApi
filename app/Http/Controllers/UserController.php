@@ -82,6 +82,17 @@ class UserController extends Controller
             return response()->json($validator->errors(), 422);
         }
 
+        $existingUser = User::where('email', $request->email)
+            ->where('google_id', null)
+            ->first();
+
+        if ($existingUser) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Email has been taken'
+            ], 409);
+        }
+
         $user = User::where('email', $request->email)
                     ->where('google_id', $request->googleId)
                     ->first();
