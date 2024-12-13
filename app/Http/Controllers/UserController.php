@@ -295,7 +295,8 @@ class UserController extends Controller
         if (!$user->verified) {
             return response()->json([
                 'success' => false,
-                'message' => 'Please verify your email before logging in.'
+                'message' => 'Please verify your email before logging in.',
+                'verified' => false
             ], 403); // 403 Forbidden
         }
         $user = [
