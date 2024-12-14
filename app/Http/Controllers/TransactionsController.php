@@ -23,54 +23,30 @@ class TransactionsController extends Controller
             'user_id' => 'required|integer',
             'id_payment' => 'required',
             'amount' => 'required|numeric',
-            'status' => 'required|in:success,failed,pending',
-            'subscribe' => 'required|in:DigitalDazzle,SparkleSend,DigitalDreamscape',
+            'subscribe' => 'required|in:SparkleSend,DigitalDreamscape',
         ]);
 
         if ($validator->fails()) {
             return response()->json($validator->errors(), 422);
         }
-        if($request->subscribe === 'SparkleSend'){
-            $currentDateTime = date("Y-m-d H:i:s");
+
+        $currentDateTime = date("Y-m-d H:i:s");
+        
+        if($request->subscribe === 'DigitalDazzle'){
             $expiredTime = date("Y-m-d H:i:s", strtotime('+1 months', strtotime($currentDateTime)));
         }else if($request->subscribe === 'DigitalDreamscape'){
-            $currentDateTime = date("Y-m-d H:i:s");
+            $expiredTime = date("Y-m-d H:i:s", strtotime('+2 months', strtotime($currentDateTime)));
+        }else{ // SparkleSend
             $expiredTime = date("Y-m-d H:i:s", strtotime('+3 months', strtotime($currentDateTime)));
-        }else{
-            $currentDateTime = date("Y-m-d H:i:s");
-            $expiredTime = date("Y-m-d H:i:s", strtotime('+7 days', strtotime($currentDateTime)));
-
-            $user = JWTAuth::parseToken()->authenticate();
-            $transactionFree = Transactions::where('user_id', $user->id)->where('subscribe', 'DigitalDazzle')->first();
-            if(!$transactionFree){
-                $transaction = Transactions::create(array_merge(
-                    $validator->validated(),
-                    ['subscribe_start' => $currentDateTime],
-                    ['subscribe_expired' => $expiredTime],
-                ));
-                if($transaction) {
-                    return response()->json([
-                        'success' => true,
-                        'message' => 'Transaction successfully created',
-                    ], 200);
-                }else{
-                    return response()->json([
-                        'success' => false,
-                    ], 409);
-                }
-            }else{
-                return response()->json([
-                    'success' => false,
-                    'data' => $transactionFree,
-                    'message' => 'DigitalDazzle has already claimed before',
-                ], 409);
-            }
         }
 
         $transaction = Transactions::create(array_merge(
             $validator->validated(),
-            ['subscribe_start' => $currentDateTime],
-            ['subscribe_expired' => $expiredTime],
+            [
+                'subscribe_start' => $currentDateTime,
+                'subscribe_expired' => $expiredTime,
+                'status' => 'pending'
+            ],
         ));
 
         if($transaction) {
@@ -84,6 +60,7 @@ class TransactionsController extends Controller
             'success' => false,
         ], 409);
     }
+
     public function showToken(Request $request)
     {
        try {
@@ -252,5 +229,41 @@ class TransactionsController extends Controller
             'musics' => $musics,
             'users' => $users
         ]);
+    }
+    public function callback(Request $request)
+    {
+        $serverKey = config('midtrans.server_key');
+        $hashed = hash("sha512", $request->order_id.$request->status_code.$request->gross_amount.$serverKey);
+
+        if($hashed == $request->signature_key){
+            if ($request->transaction_status == 'capture' || $request->transaction_status == 'settlement') {
+                $transaction = Transactions::where('id_payment', $request->order_id)->first();
+                
+                if($transaction) {
+                    $transaction->update(['status' => 'success']);
+                    
+                    return response()->json([
+                        'success' => true,
+                        'message' => 'Transaction has been updated to success'
+                    ]);
+                }
+            } else if ($request->transaction_status == 'deny' || $request->transaction_status == 'expire' || $request->transaction_status == 'cancel') {
+                $transaction = Transactions::where('id_payment', $request->order_id)->first();
+                
+                if($transaction) {
+                    $transaction->update(['status' => 'failed']);
+                    
+                    return response()->json([
+                        'success' => true,
+                        'message' => 'Transaction has been updated to failed'
+                    ]);
+                }
+            }
+        }
+
+        return response()->json([
+            'success' => false,
+            'message' => 'Invalid signature'
+        ], 403);
     }
 }

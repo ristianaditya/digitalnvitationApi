@@ -47,6 +47,11 @@ Route::middleware('api')->group(function () {
             Route::post('/create', 'create');
         });
     });
+    Route::controller(TransactionsController::class)->group(function () {
+        Route::prefix('transaction')->group(function () {
+            Route::post('/callback', 'callback');
+        });
+    });
 });
 
 Route::middleware('auth:api')->group(function () {
