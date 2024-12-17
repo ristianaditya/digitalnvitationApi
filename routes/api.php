@@ -13,6 +13,7 @@ use App\Http\Controllers\WhatsAppController;
 use App\Http\Controllers\GuestListController;
 use App\Http\Controllers\InvitationsController;
 use App\Http\Controllers\TransactionsController;
+use App\Http\Controllers\PasswordResetController;
 use App\Http\Controllers\OtpController;
 
 /*
@@ -50,6 +51,12 @@ Route::middleware('api')->group(function () {
     Route::controller(TransactionsController::class)->group(function () {
         Route::prefix('transaction')->group(function () {
             Route::post('/callback', 'callback');
+        });
+    });
+    Route::controller(PasswordResetController::class)->group(function () {
+        Route::prefix('password-reset')->group(function () {
+            Route::post('/send', 'sendResetLink');
+            Route::post('/reset', 'resetPassword');
         });
     });
 });
