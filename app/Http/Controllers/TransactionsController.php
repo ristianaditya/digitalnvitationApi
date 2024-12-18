@@ -24,6 +24,7 @@ class TransactionsController extends Controller
             'id_payment' => 'required',
             'amount' => 'required|numeric',
             'subscribe' => 'required|in:SparkleSend,DigitalDreamscape',
+            'midtrans_token' => 'required'
         ]);
 
         if ($validator->fails()) {
@@ -240,6 +241,7 @@ class TransactionsController extends Controller
                 $transaction = Transactions::where('id_payment', $request->order_id)->first();
                 
                 if($transaction) {
+                    $user = User::find($transaction->user_id); 
                     $transaction->update(['status' => 'success']);
                     $user->update(['enabled' => true]);
                     return response()->json([

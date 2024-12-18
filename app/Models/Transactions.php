@@ -22,7 +22,8 @@ class Transactions extends Model
         'subscribe',
         'id_payment',
         'subscribe_start',
-        'subscribe_expired'
+        'subscribe_expired',
+        'midtrans_token'
     ];
 
     public function user(): BelongsTo{

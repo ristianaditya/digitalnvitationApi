@@ -20,6 +20,7 @@ return new class extends Migration
             $table->enum('subscribe', ['DigitalDazzle', 'SparkleSend', 'DigitalDreamscape'])->nullable(false)->default('starter');
             $table->timestamp('subscribe_start', $precision = 0)->nullable();
             $table->timestamp('subscribe_expired', $precision = 0)->nullable();
+            $table->string('midtrans_token', 100)->nullable();
             $table->timestamps();
 
             $table->foreign('user_id')->on('users')->references('id');
