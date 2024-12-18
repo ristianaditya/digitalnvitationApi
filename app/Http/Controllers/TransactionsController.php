@@ -241,7 +241,7 @@ class TransactionsController extends Controller
                 
                 if($transaction) {
                     $transaction->update(['status' => 'success']);
-                    
+                    $user->update(['enabled' => true]);
                     return response()->json([
                         'success' => true,
                         'message' => 'Transaction has been updated to success'
