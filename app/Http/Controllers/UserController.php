@@ -346,29 +346,15 @@ class UserController extends Controller
             $user = JWTAuth::parseToken()->authenticate();
 
             $userWithTransaction = User::with(['latestTransaction'])->find($user->id);
-            if (is_null($userWithTransaction->latestTransaction) ) {
-                if (now() < $userWithTransaction->created_at->addDays(7)) {
-                        $userWithTransaction->update(['enabled' => true]);
-                } else {
-                    $userWithTransaction->update(['enabled' => false]);
-                }
-            }else{
-                if ($userWithTransaction->latestTransaction->status != 'success') {
-                    if (now() < $userWithTransaction->created_at->addDays(7)) {
-                        $userWithTransaction->update(['enabled' => true]);
-                    } else {
-                        $userWithTransaction->update(['enabled' => false]);
-                    }
-                }else{
-                    if ($userWithTransaction->latestTransaction->subscribe_expired < now()) {
-                        $userWithTransaction->update(['enabled' => false]);
-                    }
-                }
+            $isRecentUser = now() < $userWithTransaction->created_at->addDays(7);
+            $latestTransaction = $userWithTransaction->latestTransaction;
+
+            if (is_null($latestTransaction) || $latestTransaction->status != 'success') {
+                $userWithTransaction->update(['enabled' => $isRecentUser]);
+            } elseif ($latestTransaction->subscribe_expired < now()) {
+                $userWithTransaction->update(['enabled' => false]);
             }
             
-
-
-
             return response()->json([
                 'success' => true,
                 'data' => $userWithTransaction
