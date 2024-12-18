@@ -353,6 +353,8 @@ class UserController extends Controller
                 $userWithTransaction->update(['enabled' => $isRecentUser]);
             } elseif ($latestTransaction->subscribe_expired < now()) {
                 $userWithTransaction->update(['enabled' => false]);
+            } else {
+                $userWithTransaction->update(['enabled' => true]);
             }
             
             return response()->json([
