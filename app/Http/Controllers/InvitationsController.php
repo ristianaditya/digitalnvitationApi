@@ -39,6 +39,7 @@ class InvitationsController extends Controller
                 'music_id' => 'required',
                 'project_id' => 'required|string',
                 'invite_date' => 'required',
+                'type' => 'required',
             ]);
             if ($validator->fails()) {
                 return response()->json($validator->errors(), 422);
@@ -54,6 +55,7 @@ class InvitationsController extends Controller
                     "music_id" => $request->music_id,
                     "status" => ($request->status == true)? "publish": "unpublish",
                     "invite_date" => $invite_date,
+                    "type" => $request->type,
                 ]
             );
 

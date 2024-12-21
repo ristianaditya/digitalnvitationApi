@@ -19,6 +19,7 @@ return new class extends Migration
             $table->string('invite_link', 100)->nullable(false)->unique('invitations_invite_link_unique');
             $table->string('invite_name', 100)->nullable(false);
             $table->string('clipboard', 100)->nullable();
+            $table->string('type', 100)->nullable();
             $table->timestamp('invite_date', $precision = 0)->nullable();
             $table->enum('status', ['publish', 'unpublish'])->nullable()->default('unpublish');
             $table->timestamps();

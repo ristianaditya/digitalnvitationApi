@@ -29,6 +29,7 @@ class Invitations extends Model
         'invite_name',
         'invite_link',
         'invite_date',
+        'type',
         'status',
         'clipboard',
     ];
